@@ -1,0 +1,18 @@
+{
+    "versionLabel": "1.0",
+    "uuid": "3e601b1e-1395-4014-80cc-244422c10321",
+    "appKeys": {},
+    "longName": "Remote",
+    "versionCode": 1,
+    "capabilities": [
+        ""
+    ],
+    "shortName": "Remote",
+    "companyName": "bennettp123",
+    "watchapp": {
+        "watchface": false
+    },
+    "resources": {
+        "media": []
+    }
+}

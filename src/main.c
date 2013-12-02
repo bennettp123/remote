@@ -1,90 +1,75 @@
-
-#include "pebble_os.h"
-#include "pebble_app.h"
+#include <pebble.h>
 #include "pebble_fonts.h"
 
+const bool animated = true;
+	
+static Window *window;
+static TextLayer *text_layer;
 
-#define MY_UUID { 0x92, 0xF5, 0xA5, 0xB3, 0x92, 0x68, 0x48, 0x5B, 0x82, 0xE5, 0xE0, 0xDF, 0xB0, 0x3F, 0xAA, 0x5C }
-PBL_APP_INFO_SIMPLE(MY_UUID, "Remote", "bennettp123", 1 /* App version */);
-
-
-Window window;
-
-TextLayer textLayer;
-
-
-// Modify these common button handlers
-
-void up_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-
-  text_layer_set_text(&textLayer, "Up!");
+void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+	text_layer_set_text(text_layer, "Up!");
 }
 
-
-void down_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-
-  text_layer_set_text(&textLayer, "Down!");
+void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+	text_layer_set_text(text_layer, "Down!");
 }
 
-
-void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-
-  text_layer_set_text(&textLayer, "Select!");
+void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+	text_layer_set_text(text_layer, "Select!");
 }
 
-
-void select_long_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-
-  text_layer_set_text(&textLayer, "Long!");
+void select_long_click_handler(ClickRecognizerRef recognizer, void *context)
+{
+	text_layer_set_text(text_layer, "Long!");
 }
 
-
-// This usually won't need to be modified
-
-void click_config_provider(ClickConfig **config, Window *window) {
-  (void)window;
-
-  config[BUTTON_ID_SELECT]->click.handler = (ClickHandler) select_single_click_handler;
-
-  config[BUTTON_ID_SELECT]->long_click.handler = (ClickHandler) select_long_click_handler;
-
-  config[BUTTON_ID_UP]->click.handler = (ClickHandler) up_single_click_handler;
-  config[BUTTON_ID_UP]->click.repeat_interval_ms = 100;
-
-  config[BUTTON_ID_DOWN]->click.handler = (ClickHandler) down_single_click_handler;
-  config[BUTTON_ID_DOWN]->click.repeat_interval_ms = 100;
+void select_long_click_release_handler(ClickRecognizerRef recognizer, void *context)
+{
+	text_layer_set_text(text_layer, "Released!");
 }
 
+void click_config_provider(void *context)
+{
+	window_set_click_context(BUTTON_ID_UP, context);
+	window_set_click_context(BUTTON_ID_SELECT, context);
+	window_set_click_context(BUTTON_ID_DOWN, context);
+	window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
+	window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
+	//window_long_click_subscribe(BUTTON_ID_SELECT, 100, select_long_click_handler, select_long_click_release_handler);
+	window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
+}
 
 // Standard app initialisation
 
-void handle_init(AppContextRef ctx) {
-  (void)ctx;
+void handle_init()
+{
+	window = window_create();
+	window_stack_push(window, animated);
+	
+	Layer *window_layer = window_get_root_layer(window);
+	GRect bounds = layer_get_frame(window_layer);
 
-  window_init(&window, "Remote");
-  window_stack_push(&window, true /* Animated */);
+	text_layer = text_layer_create(bounds);
+	text_layer_set_text(text_layer, "Remote");
+	//text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHAM_30_BLACK));
 
-  text_layer_init(&textLayer, window.layer.frame);
-  text_layer_set_text(&textLayer, "Remote");
-  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHAM_30_BLACK));
-  layer_add_child(&window.layer, &textLayer.layer);
+	layer_add_child(window_layer, text_layer_get_layer(text_layer));
 
-  // Attach our desired button functionality
-  window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
+	// Attach our desired button functionality
+	window_set_click_config_provider(window, click_config_provider);
 }
 
+void handle_deinit()
+{
+	text_layer_destroy(text_layer);
+	window_destroy(window);
+}
 
-void pbl_main(void *params) {
-  PebbleAppHandlers handlers = {
-    .init_handler = &handle_init
-  };
-  app_event_loop(params, &handlers);
+int main(void) {
+	handle_init();
+	app_event_loop();
+	handle_deinit();
 }
