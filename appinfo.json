@@ -1,7 +1,16 @@
 {
     "versionLabel": "1.0",
     "uuid": "3e601b1e-1395-4014-80cc-244422c10321",
-    "appKeys": {},
+    "appKeys": {
+        "right": 6,
+        "up": 2,
+        "down": 1,
+        "context": 4,
+        "null": 0,
+        "OUTPUT_TEXT": 7,
+        "select": 3,
+        "left": 5
+    },
     "longName": "Remote",
     "versionCode": 1,
     "capabilities": [
