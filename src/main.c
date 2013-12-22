@@ -69,10 +69,10 @@ void click_config_provider(void *context)
 	window_set_click_context(BUTTON_ID_UP, context);
 	window_set_click_context(BUTTON_ID_SELECT, context);
 	window_set_click_context(BUTTON_ID_DOWN, context);
-	window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
+	window_single_repeating_click_subscribe(BUTTON_ID_UP, (uint16_t) 30, up_single_click_handler);
 	window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
 	//window_long_click_subscribe(BUTTON_ID_SELECT, 100, select_long_click_handler, select_long_click_release_handler);
-	window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
+	window_single_repeating_click_subscribe(BUTTON_ID_DOWN, (uint16_t) 30, down_single_click_handler);
 }
 
 
